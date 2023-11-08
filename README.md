@@ -5,6 +5,10 @@ This is a python library for XL320 servo using DynamixelSDK.
 $ ./install.sh
 ```
 
+## Uninstall
+```bash
+$ sudo pip3 uninstall -y mbot_xl320_library dynamixel_sdk
+```
 ## Examples
 Example `rotate_full_range.py`: 
 
@@ -23,3 +27,7 @@ then run the following:
 $ cd examples/
 $ sudo python3 rotate_full_range.py
 ```
+
+---
+
+`/usr/local/lib/python3.10/dist-packages`

@@ -10,12 +10,12 @@ git submodule update
 
 # Install Dynamixel SDK from the submodule
 echo "Installing Dynamixel SDK..."
-cd "$WORKSPACE_PATH/mbot_xl320_library/DynamixelSDK/python"
-sudo python3 setup.py install || { echo 'Installing Dynamixel SDK failed.'; exit 1; }
+cd "$WORKSPACE_PATH/DynamixelSDK/python"
+sudo pip3 install . || { echo 'Installing Dynamixel SDK failed.'; exit 1; }
 
 # Install mbot_xl320_library
 echo "Installing mbot_xl320_library..."
-cd "$WORKSPACE_PATH/mbot_xl320_library"
-sudo python3 setup.py install || { echo 'Installing mbot_xl320_library failed.'; exit 1; }
+cd "$WORKSPACE_PATH"
+sudo pip3 install . --upgrade || { echo 'Installing mbot_xl320_library failed.'; exit 1; }
 
 echo "Installation completed successfully."
