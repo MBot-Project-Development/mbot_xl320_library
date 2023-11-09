@@ -31,9 +31,9 @@ class Servo:
             self.portHandler, self.servo_id, config.ADDR_TORQUE_ENABLE
         )
         if torque_enable == 1:
-            print("Torque is enabled")
+            print("[ID:%d] Torque is enabled!" % self.servo_id)
         else:
-            print("Torque is disabled")
+            print("[ID:%d] Torque is disabled!" % self.servo_id)
 
     def print_error_msg(self, dxl_comm_result, dxl_error):
         if dxl_comm_result != COMM_SUCCESS:
@@ -104,10 +104,11 @@ class Servo:
         )
         if config.DEBUG:
             self.print_error_msg(dxl_comm_result, dxl_error)
+
         goal_position_set, dxl_comm_result, dxl_error = self.packetHandler.read2ByteTxRx(
             self.portHandler, self.servo_id, config.ADDR_GOAL_POSITION
         )
-        print("Goal position set to: ", goal_position_set)
+        print(f"[ID:{self.servo_id}] Goal position set to: {goal_position_set}")
 
     def set_control_mode(self, mode):
         """
@@ -128,17 +129,19 @@ class Servo:
         mode_value = config.WHEEL_MODE if mode == "wheel" else config.JOINT_MODE
 
         dxl_comm_result, dxl_error = self.packetHandler.write1ByteTxRx(
-            self.portHandler, self.servo_id, config.ADDR_CONTROL_MODE, mode_value
-        )
+            self.portHandler, self.servo_id, config.ADDR_CONTROL_MODE, mode_value)
+
         if config.DEBUG:
             self.print_error_msg(dxl_comm_result, dxl_error)
 
         curr_control_mode, dxl_comm_result, dxl_error = self.packetHandler.read1ByteTxRx(
-            self.portHandler, self.servo_id, config.ADDR_CONTROL_MODE
-        )
+            self.portHandler, self.servo_id, config.ADDR_CONTROL_MODE)
+            
         if config.DEBUG:
             self.print_error_msg(dxl_comm_result, dxl_error)
-        print("Control Mode set to (1 is wheel, 2 is joint): ", curr_control_mode)
+
+        control_mode_name = "wheel" if curr_control_mode == 1 else "joint"
+        print(f"[ID:{self.servo_id}] control mode set to {control_mode_name}")
 
     def set_joint_speed(self, speed):
         """
@@ -163,9 +166,9 @@ class Servo:
             self.print_error_msg(dxl_comm_result, dxl_error)
         rpm_speed = 0.111 * speed
         if speed == 0:
-            print(f"Set joint mode speed to maximum rpm")
+            print(f"[ID:{self.servo_id}] Set speed to maximum rpm")
         else:
-            print(f"Set joint mode speed to: {speed}, {rpm_speed:.2f} in rpm")
+            print(f"[ID:{self.servo_id}] Set speed to: {speed}, {rpm_speed:.2f} in rpm")
 
     def set_wheel_ccw_speed(self, load):
         """
@@ -189,7 +192,7 @@ class Servo:
         )
         if config.DEBUG:
             self.print_error_msg(dxl_comm_result, dxl_error)
-        print(f"Set wheel mode to rotate Counter-Clockwise with {load}% output")
+        print(f"[ID:{self.servo_id}] Set wheel mode to rotate Counter-Clockwise with {load}% output")
 
     def set_wheel_cw_speed(self, load):
         """
@@ -214,4 +217,4 @@ class Servo:
         if config.DEBUG:
             self.print_error_msg(dxl_comm_result, dxl_error)
 
-        print(f"Set wheel mode to rotate Clockwise direction with {load}% output")
+        print(f"[ID:{self.servo_id}] Set wheel mode to rotate Clockwise with {load}% output")
