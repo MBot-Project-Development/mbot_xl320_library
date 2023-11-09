@@ -37,4 +37,4 @@ LED_CYAN                    = 6
 LED_WHITE                   = 7
 
 # Debug flag
-DEBUG                       = True
+DEBUG                       = False

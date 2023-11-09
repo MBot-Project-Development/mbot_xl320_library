@@ -30,4 +30,8 @@ $ sudo python3 rotate_full_range.py
 
 ---
 
-`/usr/local/lib/python3.10/dist-packages`
+Python Auto Formatter [Black](https://github.com/psf/black) is used in this project.
+
+```bash
+$ black -l 100 servo.py
+```
