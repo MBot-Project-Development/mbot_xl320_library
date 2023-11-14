@@ -1,4 +1,4 @@
-# Define Address
+# Define Address for XL320
 MY_DXL                      = 'XL320'     
 ADDR_CW_ANGLE_LIMIT         = 6
 ADDR_CCW_ANGLE_LIMIT        = 8
@@ -37,4 +37,7 @@ LED_CYAN                    = 6
 LED_WHITE                   = 7
 
 # Debug flag
-DEBUG                       = False
+DEBUG                       = True
+
+# GPIO PIN 
+JETSON_CTL_PIN              = 79

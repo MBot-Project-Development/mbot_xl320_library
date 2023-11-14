@@ -4,7 +4,7 @@
 import os
 import sys
 import time
-from . import config
+from . import config, gpio_port_handler
 from dynamixel_sdk import *  # Uses Dynamixel SDK library
 
 
@@ -38,7 +38,7 @@ def initialize_handlers(port_name):
     @param port_name: The port name where the Dynamixel motor is connected.
     @return: A tuple containing the initialized port handler and packet handler.
     """
-    portHandler = PortHandler(port_name)
+    portHandler = gpio_port_handler.GPIOPortHandler(port_name)
     packetHandler = PacketHandler(config.PROTOCOL_VERSION)
     return portHandler, packetHandler
 

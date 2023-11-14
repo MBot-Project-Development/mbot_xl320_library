@@ -14,7 +14,7 @@ DXL_MOVING_STATUS_THRESHOLD = 20  # Dynamixel moving status threshold
 
 
 def main():
-    portHandler, packetHandler = initialize_handlers("/dev/ttyACM0")
+    portHandler, packetHandler = initialize_handlers("/dev/ttyTHS1")
 
     # defines the servo's ID
     servo1_ID = 1
@@ -25,7 +25,7 @@ def main():
 
     # Initialize a Servo instance
     servo1 = Servo(servo1_ID, portHandler, packetHandler)
-    servo1.change_led_color(LED_RED)
+    servo1.change_led_color(LED_BLUE)
     servo1.disable_torque()
     servo1.set_control_mode("joint")  # torque must be off when you change mode
     servo1.enable_torque()

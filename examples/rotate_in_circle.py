@@ -11,7 +11,7 @@ Use: sudo python3 rotate_in_circle.py
 from mbot_xl320_library import *
 
 def main():
-    portHandler, packetHandler = initialize_handlers("/dev/ttyACM0")
+    portHandler, packetHandler = initialize_handlers("/dev/ttyTHS1")
 
     # defines the servo's ID
     servo1_ID = 1
