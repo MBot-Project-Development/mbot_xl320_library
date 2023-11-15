@@ -14,6 +14,7 @@ DXL_MOVING_STATUS_THRESHOLD = 20  # Dynamixel moving status threshold
 
 
 def main():
+    initialize_GPIO()
     portHandler, packetHandler = initialize_handlers("/dev/ttyTHS1")
 
     # defines the servo's ID

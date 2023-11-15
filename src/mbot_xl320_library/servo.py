@@ -23,14 +23,12 @@ class Servo:
 
         For example: servo.change_led_color(LED_RED)
         """
-        GPIO.output(self.CTL_PIN, GPIO.LOW)
         self.packetHandler.write1ByteTxRx(self.portHandler, self.servo_id, config.ADDR_LED, color)
 
     def check_torque_status(self):
         """
         @brief Checks the torque status by reading from torque address
         """
-        GPIO.output(self.CTL_PIN, GPIO.HIGH)
         torque_enable, _, _ = self.packetHandler.read1ByteTxRx(
             self.portHandler, self.servo_id, config.ADDR_TORQUE_ENABLE
         )
@@ -51,7 +49,6 @@ class Servo:
 
         Note: Torque must be enabled before moving the servo.
         """
-        GPIO.output(self.CTL_PIN, GPIO.LOW)
         dxl_comm_result, dxl_error = self.packetHandler.write1ByteTxRx(
             self.portHandler, self.servo_id, config.ADDR_TORQUE_ENABLE, config.TORQUE_ENABLE
         )
@@ -91,8 +88,8 @@ class Servo:
         dxl_present_position, dxl_comm_result, dxl_error = self.packetHandler.read2ByteTxRx(
             self.portHandler, self.servo_id, config.ADDR_PRESENT_POSITION
         )
-        if config.DEBUG:
-            self.print_error_msg(dxl_comm_result, dxl_error)
+        # if config.DEBUG:
+        #     self.print_error_msg(dxl_comm_result, dxl_error)
         return dxl_present_position
 
     def set_position(self, goal_position):

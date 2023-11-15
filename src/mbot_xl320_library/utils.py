@@ -7,6 +7,7 @@ import time
 from . import config 
 from dynamixel_sdk import *  # Uses Dynamixel SDK library
 import Jetson.GPIO as GPIO
+from . import gpio_protocol2_packet_handler
 
 
 def getch():
@@ -41,7 +42,7 @@ def initialize_handlers(port_name):
     """
 
     portHandler = PortHandler(port_name)
-    packetHandler = PacketHandler(config.PROTOCOL_VERSION)
+    packetHandler = gpio_protocol2_packet_handler.GPIOPacketHandler()
     return portHandler, packetHandler
 
 def initialize_GPIO():

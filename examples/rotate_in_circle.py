@@ -11,6 +11,7 @@ Use: sudo python3 rotate_in_circle.py
 from mbot_xl320_library import *
 
 def main():
+    initialize_GPIO()
     portHandler, packetHandler = initialize_handlers("/dev/ttyTHS1")
 
     # defines the servo's ID
@@ -56,6 +57,7 @@ def main():
         servo1.disable_torque()
         servo2.disable_torque()
         close_port(portHandler)
+        close_GPIO()
 
 
 if __name__ == "__main__":
