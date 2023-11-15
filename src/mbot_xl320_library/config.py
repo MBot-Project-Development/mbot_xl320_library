@@ -29,7 +29,7 @@ DXL_MOVING_STATUS_THRESHOLD = 20    # Dynamixel moving status threshold
 
 # LED color
 LED_RED                     = 1
-LED_GREEM                   = 2
+LED_GREEN                   = 2
 LED_YELLOW                  = 3
 LED_BLUE                    = 4
 LED_PURPLE                  = 5
@@ -40,4 +40,4 @@ LED_WHITE                   = 7
 DEBUG                       = True
 
 # Jetson PIN number
-JETSON_CTL_PIN              = 18
+JETSON_CTL_PIN              = 12
