@@ -2,8 +2,8 @@ import os
 import sys
 import time
 from . import config
-from . import gpio_port_handler
 from dynamixel_sdk import *  # Uses Dynamixel SDK library
+import Jetson.GPIO as GPIO
 
 
 class Servo:
@@ -13,6 +13,7 @@ class Servo:
         self.servo_id = servo_id
         self.portHandler = portHandler
         self.packetHandler = packetHandler
+        self.CTL_PIN = config.JETSON_CTL_PIN
 
     def change_led_color(self, color):
         """

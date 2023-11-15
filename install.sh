@@ -8,6 +8,9 @@ echo "Initializing and updating submodules..."
 git submodule init
 git submodule update
 
+# Install Jetson's GPIOs Library
+sudo pip install Jetson.GPIO
+
 # Install Dynamixel SDK from the submodule
 echo "Installing Dynamixel SDK..."
 cd "$WORKSPACE_PATH/DynamixelSDK/python"

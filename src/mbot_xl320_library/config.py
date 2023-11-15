@@ -39,5 +39,5 @@ LED_WHITE                   = 7
 # Debug flag
 DEBUG                       = True
 
-# GPIO PIN 
-JETSON_CTL_PIN              = 79
+# Jetson PIN number
+JETSON_CTL_PIN              = 18

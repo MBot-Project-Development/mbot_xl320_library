@@ -4,8 +4,9 @@
 import os
 import sys
 import time
-from . import config, gpio_port_handler
+from . import config 
 from dynamixel_sdk import *  # Uses Dynamixel SDK library
+import Jetson.GPIO as GPIO
 
 
 def getch():
@@ -38,9 +39,19 @@ def initialize_handlers(port_name):
     @param port_name: The port name where the Dynamixel motor is connected.
     @return: A tuple containing the initialized port handler and packet handler.
     """
-    portHandler = gpio_port_handler.GPIOPortHandler(port_name)
+
+    portHandler = PortHandler(port_name)
     packetHandler = PacketHandler(config.PROTOCOL_VERSION)
     return portHandler, packetHandler
+
+def initialize_GPIO():
+    GPIO.setmode(GPIO.BOARD)  # BOARD pin-numbering scheme, meaning using physical number
+    GPIO.setup(config.JETSON_CTL_PIN, GPIO.OUT)  # CTL pin set as output
+    GPIO.output(config.JETSON_CTL_PIN, GPIO.LOW)  # Initialize as LOW (receiving mode)
+    print("Initializing...GPIO pin set to LOW")
+
+def close_GPIO():
+    GPIO.cleanup()
 
 
 def open_port(portHandler):
