@@ -3,6 +3,7 @@ import sys
 import time
 from . import config
 from dynamixel_sdk import *  # Uses Dynamixel SDK library
+import Jetson.GPIO as GPIO
 
 
 class Servo:
@@ -12,6 +13,7 @@ class Servo:
         self.servo_id = servo_id
         self.portHandler = portHandler
         self.packetHandler = packetHandler
+        self.CTL_PIN = config.JETSON_CTL_PIN
 
     def change_led_color(self, color):
         """
@@ -19,23 +21,13 @@ class Servo:
 
         @param color The color is defined in config.py
 
+        @return None.
+
         For example: servo.change_led_color(LED_RED)
         """
-        self.packetHandler.write1ByteTxRx(self.portHandler, self.servo_id, config.ADDR_LED, color)
-
-    def check_torque_status(self):
-        """
-        @brief Checks the torque status by reading from torque address
-        """
-        torque_enable, _, _ = self.packetHandler.read1ByteTxRx(
-            self.portHandler, self.servo_id, config.ADDR_TORQUE_ENABLE
-        )
-        if torque_enable == 1:
-            print("[ID:%d] Torque is enabled!" % self.servo_id)
-        else:
-            print("[ID:%d] Torque is disabled!" % self.servo_id)
-
-    def print_error_msg(self, dxl_comm_result, dxl_error):
+        dxl_comm_result, dxl_error = self.packetHandler.write1ByteTxRx(
+            self.portHandler, self.servo_id, config.ADDR_LED, color)
+        
         if dxl_comm_result != COMM_SUCCESS:
             print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
         elif dxl_error != 0:
@@ -45,37 +37,37 @@ class Servo:
         """
         @brief Enable torque for the servo.
 
+        @return None.
+
         Note: Torque must be enabled before moving the servo.
         """
         dxl_comm_result, dxl_error = self.packetHandler.write1ByteTxRx(
-            self.portHandler, self.servo_id, config.ADDR_TORQUE_ENABLE, config.TORQUE_ENABLE
-        )
-        if config.DEBUG:
-            self.print_error_msg(dxl_comm_result, dxl_error)
-        self.check_torque_status()
+            self.portHandler, self.servo_id, config.ADDR_TORQUE_ENABLE, config.TORQUE_ENABLE)
+        
+        if dxl_comm_result != COMM_SUCCESS:
+            print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
+        elif dxl_error != 0:
+            print("%s" % self.packetHandler.getRxPacketError(dxl_error))
+        else:
+            print(f"[ID:{self.servo_id}] Torque is enabled!")
 
     def disable_torque(self):
         """
         @brief Disable torque for the servo.
+        
+        @return None.
 
         Note: Torque must be disabled before changing control mode
         """
         dxl_comm_result, dxl_error = self.packetHandler.write1ByteTxRx(
-            self.portHandler, self.servo_id, config.ADDR_TORQUE_ENABLE, config.TORQUE_DISABLE
-        )
-        if config.DEBUG:
-            self.print_error_msg(dxl_comm_result, dxl_error)
-        self.check_torque_status()
+            self.portHandler, self.servo_id, config.ADDR_TORQUE_ENABLE, config.TORQUE_DISABLE)
 
-    def look_error_info(self):
-        hardware_error_status, dxl_comm_result, dxl_error = self.packetHandler.read1ByteTxRx(
-            self.portHandler, self.servo_id, config.ADDR_HARDWARE_ERROR_STATUS
-        )
-        print("Hardware Error Status: ", hardware_error_status)
-        shutdown_error_info, dxl_comm_result, dxl_error = self.packetHandler.read1ByteTxRx(
-            self.portHandler, self.servo_id, config.ADDR_SHUTDOWN
-        )
-        print("Shutdown Error Information: ", shutdown_error_info)
+        if dxl_comm_result != COMM_SUCCESS:
+            print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
+        elif dxl_error != 0:
+            print("%s" % self.packetHandler.getRxPacketError(dxl_error))
+        else:
+            print(f"[ID:{self.servo_id}] Torque is disabled!")
 
     def get_position(self):
         """
@@ -84,11 +76,16 @@ class Servo:
         @return servo's current position in range [0, 1023]
         """
         dxl_present_position, dxl_comm_result, dxl_error = self.packetHandler.read2ByteTxRx(
-            self.portHandler, self.servo_id, config.ADDR_PRESENT_POSITION
-        )
-        if config.DEBUG:
-            self.print_error_msg(dxl_comm_result, dxl_error)
-        return dxl_present_position
+            self.portHandler, self.servo_id, config.ADDR_PRESENT_POSITION)
+
+        if dxl_comm_result != COMM_SUCCESS:
+            print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
+            return dxl_present_position
+        elif dxl_error != 0:
+            print("%s" % self.packetHandler.getRxPacketError(dxl_error))
+            return dxl_present_position
+        else:
+            return dxl_present_position
 
     def set_position(self, goal_position):
         """
@@ -100,27 +97,25 @@ class Servo:
         @return None.
         """
         dxl_comm_result, dxl_error = self.packetHandler.write2ByteTxRx(
-            self.portHandler, self.servo_id, config.ADDR_GOAL_POSITION, goal_position
-        )
-        if config.DEBUG:
-            self.print_error_msg(dxl_comm_result, dxl_error)
-
-        goal_position_set, dxl_comm_result, dxl_error = self.packetHandler.read2ByteTxRx(
-            self.portHandler, self.servo_id, config.ADDR_GOAL_POSITION
-        )
-        print(f"[ID:{self.servo_id}] Goal position set to: {goal_position_set}")
+            self.portHandler, self.servo_id, config.ADDR_GOAL_POSITION, goal_position)
+        
+        if dxl_comm_result != COMM_SUCCESS:
+            print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
+        elif dxl_error != 0:
+            print("%s" % self.packetHandler.getRxPacketError(dxl_error))
+        else:
+            print(f"[ID:{self.servo_id}] Set the goal position!")
 
     def set_control_mode(self, mode):
         """
         @brief Sets the control mode of the servo to either wheel or joint.
 
         This method configures the servo's operating mode to either 'wheel' for continuous rotation or 'joint' for standard angular movement.
-        After setting the mode, it reads back the mode to verify the change.
 
         @param mode A string that must be either "wheel" or "joint" to set the corresponding mode.
         @throw ValueError if the provided mode string is not "wheel" or "joint".
 
-        @return None. However, it prints the current control mode after setting it.
+        @return None.  
         """
         if mode not in ["wheel", "joint"]:
             print("The control mode has to be either 'wheel' or 'joint'")
@@ -131,24 +126,19 @@ class Servo:
         dxl_comm_result, dxl_error = self.packetHandler.write1ByteTxRx(
             self.portHandler, self.servo_id, config.ADDR_CONTROL_MODE, mode_value)
 
-        if config.DEBUG:
-            self.print_error_msg(dxl_comm_result, dxl_error)
-
-        curr_control_mode, dxl_comm_result, dxl_error = self.packetHandler.read1ByteTxRx(
-            self.portHandler, self.servo_id, config.ADDR_CONTROL_MODE)
-            
-        if config.DEBUG:
-            self.print_error_msg(dxl_comm_result, dxl_error)
-
-        control_mode_name = "wheel" if curr_control_mode == 1 else "joint"
-        print(f"[ID:{self.servo_id}] control mode set to {control_mode_name}")
+        if dxl_comm_result != COMM_SUCCESS:
+            print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
+        elif dxl_error != 0:
+            print("%s" % self.packetHandler.getRxPacketError(dxl_error))
+        else:
+            print(f"[ID:{self.servo_id}] Set the control mode to {mode}!")
 
     def set_joint_speed(self, speed):
         """
         @brief Sets the joint speed of the servo.
 
         The range [0, 1023] maps to the speeds from minimum to maximum.
-        Note that 0 represents the maximumun speed not stop.
+        Note that 0 represents the maximum speed not stop.
         The servo in joint mode will only stop when reach goal postion.
 
         @param speed An integer value in range [0, 1023]
@@ -160,15 +150,18 @@ class Servo:
         if not 0 <= speed <= 1023:
             raise ValueError("Speed must be between 0 and 1023")
         dxl_comm_result, dxl_error = self.packetHandler.write2ByteTxRx(
-            self.portHandler, self.servo_id, config.ADDR_GOAL_SPEED, speed
-        )
-        if config.DEBUG:
-            self.print_error_msg(dxl_comm_result, dxl_error)
-        rpm_speed = 0.111 * speed
-        if speed == 0:
-            print(f"[ID:{self.servo_id}] Set speed to maximum rpm")
+            self.portHandler, self.servo_id, config.ADDR_GOAL_SPEED, speed)
+        
+        if dxl_comm_result != COMM_SUCCESS:
+            print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
+        elif dxl_error != 0:
+            print("%s" % self.packetHandler.getRxPacketError(dxl_error))
         else:
-            print(f"[ID:{self.servo_id}] Set speed to: {speed}, {rpm_speed:.2f} in rpm")
+            rpm_speed = 0.111 * speed
+            if speed == 0:
+                print(f"[ID:{self.servo_id}] Set speed to maximum rpm")
+            else:
+                print(f"[ID:{self.servo_id}] Set speed to: {speed}, {rpm_speed:.2f} in rpm")
 
     def set_wheel_ccw_speed(self, load):
         """
@@ -188,12 +181,15 @@ class Servo:
 
         speed = int(load * 0.01 * 1023)
         dxl_comm_result, dxl_error = self.packetHandler.write2ByteTxRx(
-            self.portHandler, self.servo_id, config.ADDR_GOAL_SPEED, speed
-        )
-        if config.DEBUG:
-            self.print_error_msg(dxl_comm_result, dxl_error)
-        print(f"[ID:{self.servo_id}] Set wheel mode to rotate Counter-Clockwise with {load}% output")
+            self.portHandler, self.servo_id, config.ADDR_GOAL_SPEED, speed)
 
+        if dxl_comm_result != COMM_SUCCESS:
+            print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
+        elif dxl_error != 0:
+            print("%s" % self.packetHandler.getRxPacketError(dxl_error))
+        else:
+            print(f"[ID:{self.servo_id}] Set wheel mode to rotate Counter-Clockwise with {load}% output")
+        
     def set_wheel_cw_speed(self, load):
         """
         @brief Sets the moving speed of the servo in the clockwise direction.
@@ -212,9 +208,20 @@ class Servo:
         speed = int((load / 100.0) * 1023)
         speed += 1024
         dxl_comm_result, dxl_error = self.packetHandler.write2ByteTxRx(
-            self.portHandler, self.servo_id, config.ADDR_GOAL_SPEED, speed
-        )
-        if config.DEBUG:
-            self.print_error_msg(dxl_comm_result, dxl_error)
+            self.portHandler, self.servo_id, config.ADDR_GOAL_SPEED, speed)
+        
+        if dxl_comm_result != COMM_SUCCESS:
+            print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
+        elif dxl_error != 0:
+            print("%s" % self.packetHandler.getRxPacketError(dxl_error))
+        else:
+            print(f"[ID:{self.servo_id}] Set wheel mode to rotate Clockwise with {load}% output")
 
-        print(f"[ID:{self.servo_id}] Set wheel mode to rotate Clockwise with {load}% output")
+    def look_error_info(self):
+        hardware_error_status, dxl_comm_result, dxl_error = self.packetHandler.read1ByteTxRx(
+            self.portHandler, self.servo_id, config.ADDR_HARDWARE_ERROR_STATUS)
+        print("Hardware Error Status: ", hardware_error_status)
+
+        shutdown_error_info, dxl_comm_result, dxl_error = self.packetHandler.read1ByteTxRx(
+            self.portHandler, self.servo_id, config.ADDR_SHUTDOWN)
+        print("Shutdown Error Information: ", shutdown_error_info)

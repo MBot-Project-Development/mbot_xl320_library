@@ -1,4 +1,4 @@
-# Define Address
+# Define Address for XL320
 MY_DXL                      = 'XL320'     
 ADDR_CW_ANGLE_LIMIT         = 6
 ADDR_CCW_ANGLE_LIMIT        = 8
@@ -29,12 +29,12 @@ DXL_MOVING_STATUS_THRESHOLD = 20    # Dynamixel moving status threshold
 
 # LED color
 LED_RED                     = 1
-LED_GREEM                   = 2
+LED_GREEN                   = 2
 LED_YELLOW                  = 3
 LED_BLUE                    = 4
 LED_PURPLE                  = 5
 LED_CYAN                    = 6
 LED_WHITE                   = 7
 
-# Debug flag
-DEBUG                       = False
+# Jetson PIN number
+JETSON_CTL_PIN              = 12

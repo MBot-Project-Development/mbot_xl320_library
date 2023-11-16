@@ -4,8 +4,10 @@
 import os
 import sys
 import time
-from . import config
+from . import config 
 from dynamixel_sdk import *  # Uses Dynamixel SDK library
+import Jetson.GPIO as GPIO
+from . import gpio_protocol2_packet_handler
 
 
 def getch():
@@ -30,7 +32,6 @@ def getch():
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return ch
 
-
 def initialize_handlers(port_name):
     """
     Initializes the port handler and packet handler for Dynamixel motors.
@@ -38,9 +39,31 @@ def initialize_handlers(port_name):
     @param port_name: The port name where the Dynamixel motor is connected.
     @return: A tuple containing the initialized port handler and packet handler.
     """
+
     portHandler = PortHandler(port_name)
     packetHandler = PacketHandler(config.PROTOCOL_VERSION)
     return portHandler, packetHandler
+
+def initialize_gpio_handlers(port_name):
+    """
+    Initializes the port handler and customized packet handler for Dynamixel motors.
+
+    @param port_name: The port name where the Dynamixel motor is connected.
+    @return: A tuple containing the initialized port handler and packet handler.
+    """
+
+    portHandler = PortHandler(port_name)
+    packetHandler = gpio_protocol2_packet_handler.GPIOPacketHandler()
+    return portHandler, packetHandler
+
+def initialize_GPIO():
+    GPIO.setmode(GPIO.BOARD)  # BOARD pin-numbering scheme, meaning using physical number
+    GPIO.setup(config.JETSON_CTL_PIN, GPIO.OUT)  # CTL pin set as output
+    GPIO.output(config.JETSON_CTL_PIN, GPIO.LOW)  # Initialize as LOW (receiving mode)
+    print("Initializing...GPIO pin set to LOW")
+
+def close_GPIO():
+    GPIO.cleanup()
 
 
 def open_port(portHandler):

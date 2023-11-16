@@ -10,8 +10,20 @@ Use: sudo python3 rotate_in_circle.py
 
 from mbot_xl320_library import *
 
+# Define your settings here
+# CONNECTION_DEVICE = "UART"    # change to "UART" if you are using UART connection
+CONNECTION_DEVICE = "USB"   # change to "USB" if you are using USB2AX connection
+# PORT_NAME = "/dev/ttyTHS1"    # UART has fixed port name ttyTHS1, 
+PORT_NAME = "/dev/ttyACM0"  # USB port names are dynamic you need to check what it is 
+
 def main():
-    portHandler, packetHandler = initialize_handlers("/dev/ttyACM0")
+    if CONNECTION_DEVICE == "UART":
+        initialize_GPIO()
+        portHandler, packetHandler = initialize_gpio_handlers(PORT_NAME)
+    elif CONNECTION_DEVICE == "USB":
+        portHandler, packetHandler = initialize_handlers(PORT_NAME)
+    else:
+        print("Invalid connnection device!")
 
     # defines the servo's ID
     servo1_ID = 1
@@ -56,6 +68,8 @@ def main():
         servo1.disable_torque()
         servo2.disable_torque()
         close_port(portHandler)
+        if CONNECTION_DEVICE == "UART":
+            close_GPIO()
 
 
 if __name__ == "__main__":
