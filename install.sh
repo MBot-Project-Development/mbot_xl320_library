@@ -19,6 +19,6 @@ sudo pip3 install . || { echo 'Installing Dynamixel SDK failed.'; exit 1; }
 # Install mbot_xl320_library
 echo "Installing mbot_xl320_library..."
 cd "$WORKSPACE_PATH"
-sudo pip3 install -e . || { echo 'Installing mbot_xl320_library failed.'; exit 1; }
+sudo pip3 install . || { echo 'Installing mbot_xl320_library failed.'; exit 1; }
 
 echo "Installation completed successfully."
