@@ -36,8 +36,5 @@ LED_PURPLE                  = 5
 LED_CYAN                    = 6
 LED_WHITE                   = 7
 
-# Debug flag
-DEBUG                       = True
-
 # Jetson PIN number
 JETSON_CTL_PIN              = 12

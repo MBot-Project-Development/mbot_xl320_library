@@ -2,7 +2,7 @@
 Servo movement example in "joint" mode
 
 This script demonstrates the use of the mbot_xl320_library to control servo motors.
-The servo is set to operate in "joint" mode, where it alternates between two limit positions.
+The servo is set to operate in "joint" mode, where it alternates between two goal positions we set.
 
 Use: sudo python3 rotate_full_range.py
 """
@@ -77,7 +77,7 @@ def main():
             index = 0
 
     close_port(portHandler)
-
+    close_GPIO()
 
 if __name__ == "__main__":
     main()
