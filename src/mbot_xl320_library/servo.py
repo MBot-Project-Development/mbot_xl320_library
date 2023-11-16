@@ -80,10 +80,10 @@ class Servo:
 
         if dxl_comm_result != COMM_SUCCESS:
             print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
-            return -1
+            return dxl_present_position
         elif dxl_error != 0:
             print("%s" % self.packetHandler.getRxPacketError(dxl_error))
-            return -1
+            return dxl_present_position
         else:
             return dxl_present_position
 

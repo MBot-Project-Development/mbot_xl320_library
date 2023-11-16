@@ -32,10 +32,21 @@ def getch():
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return ch
 
-
 def initialize_handlers(port_name):
     """
     Initializes the port handler and packet handler for Dynamixel motors.
+
+    @param port_name: The port name where the Dynamixel motor is connected.
+    @return: A tuple containing the initialized port handler and packet handler.
+    """
+
+    portHandler = PortHandler(port_name)
+    packetHandler = PacketHandler(config.PROTOCOL_VERSION)
+    return portHandler, packetHandler
+
+def initialize_gpio_handlers(port_name):
+    """
+    Initializes the port handler and customized packet handler for Dynamixel motors.
 
     @param port_name: The port name where the Dynamixel motor is connected.
     @return: A tuple containing the initialized port handler and packet handler.

@@ -9,13 +9,23 @@ Use: sudo python3 rotate_full_range.py
 
 from mbot_xl320_library import *
 
-# user defined value
+# Define your settings here
+# CONNECTION_DEVICE = "UART"    # change to "UART" if you are using UART connection
+CONNECTION_DEVICE = "USB"   # change to "USB" if you are using USB2AX connection
+# PORT_NAME = "/dev/ttyTHS1"    # UART has fixed port name ttyTHS1, no need to check the name
+PORT_NAME = "/dev/ttyACM0"  # USB port names are dynamic you need to check what it is 
+
+# User defined value
 DXL_MOVING_STATUS_THRESHOLD = 20  # Dynamixel moving status threshold
 
-
 def main():
-    initialize_GPIO()
-    portHandler, packetHandler = initialize_handlers("/dev/ttyTHS1")
+    if CONNECTION_DEVICE == "UART":
+        initialize_GPIO()
+        portHandler, packetHandler = initialize_gpio_handlers(PORT_NAME)
+    elif CONNECTION_DEVICE == "USB":
+        portHandler, packetHandler = initialize_handlers(PORT_NAME)
+    else:
+        print("Invalid connnection device!")
 
     # defines the servo's ID
     servo1_ID = 1
@@ -26,7 +36,7 @@ def main():
 
     # Initialize a Servo instance
     servo1 = Servo(servo1_ID, portHandler, packetHandler)
-    servo1.change_led_color(LED_BLUE)
+    servo1.change_led_color(LED_PURPLE)
     servo1.disable_torque()
     servo1.set_control_mode("joint")  # torque must be off when you change mode
     servo1.enable_torque()
@@ -44,17 +54,16 @@ def main():
         DXL_MAXIMUM_POSITION_VALUE,
     ]  # these are the actual limits of the servo
 
-    servo1.set_joint_speed(300)  # range(0,1023)
-    servo2.set_joint_speed(300)  # range(0,1023)
+    servo1.set_joint_speed(200)  # range(0,1023)
+    servo2.set_joint_speed(200)  # range(0,1023)
 
     while True:
         print("Press any key to continue! (or press ESC to quit!)")
         if getch() == chr(0x1B):
             break
-
+        
         servo1.set_position(goal_positions[index])
         servo2.set_position(goal_positions[index])
-
         while True:
             servo1_current_position = servo1.get_position()
             servo2_current_position = servo2.get_position()
@@ -77,7 +86,8 @@ def main():
             index = 0
 
     close_port(portHandler)
-    close_GPIO()
+    if CONNECTION_DEVICE == "UART":
+        close_GPIO()
 
 if __name__ == "__main__":
     main()
